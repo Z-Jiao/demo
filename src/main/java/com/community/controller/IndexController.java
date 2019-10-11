@@ -8,12 +8,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.Map;
 
 @Controller
-public class HelloController {
+public class IndexController {
 
-    @GetMapping("/hello")
-    public String hello(@RequestParam(name = "key") String value, Model model){
-        model.addAttribute("key",value);
-        return "hello";
+    @GetMapping("/")
+    public String index(){
+        return "index";
     }
 
 }
