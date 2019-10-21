@@ -5,6 +5,7 @@ import com.community.dto.GitHubUser;
 import com.community.mapper.UserMapper;
 import com.community.model.User;
 import com.community.provider.GitHubProvider;
+import com.community.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -20,7 +21,8 @@ import java.util.UUID;
 public class AuthorizeController {
     @Autowired
     private GitHubProvider gitHubProvider;
-
+    @Autowired
+    private UserService userService;
     @Autowired
     private UserMapper userMapper;
 
@@ -49,8 +51,8 @@ public class AuthorizeController {
             user.setToken(token);
             user.setName(gitHubUser.getName());
             user.setAccount_id(String.valueOf(gitHubUser.getId()));
-            user.setGmt_create(System.currentTimeMillis());
-            user.setGmt_modified(user.getGmt_create());
+
+            userService.createOrUpdate(user);
             userMapper.insert(user);
             response.addCookie(new Cookie("token", token));
             return "redirect:/";
@@ -60,4 +62,17 @@ public class AuthorizeController {
             return "redirect:/";
         }
     }
+
+    @GetMapping("/logout")
+    public String logout(HttpServletRequest request,
+                         HttpServletResponse response) {
+//删除session
+        request.getSession().removeAttribute("user");
+//删除cookie
+        Cookie cookie = new Cookie("token", null);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+        return "redirect:/";
+    }
+
 }
