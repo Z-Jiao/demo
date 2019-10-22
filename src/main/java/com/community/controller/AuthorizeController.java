@@ -51,9 +51,9 @@ public class AuthorizeController {
             user.setToken(token);
             user.setName(gitHubUser.getName());
             user.setAccount_id(String.valueOf(gitHubUser.getId()));
-
+            user.setAvatarUrl(gitHubUser.getAvatar_url());
             userService.createOrUpdate(user);
-            userMapper.insert(user);
+//            userMapper.insert(user);
             response.addCookie(new Cookie("token", token));
             return "redirect:/";
             //登录成功，写cookie和session
