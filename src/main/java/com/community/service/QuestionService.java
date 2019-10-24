@@ -2,6 +2,8 @@ package com.community.service;
 
 import com.community.dto.PaginationDTO;
 import com.community.dto.QuestionDTO;
+import com.community.exception.CustomizeErrorCode;
+import com.community.exception.CustomizeException;
 import com.community.mapper.QuestionMapper;
 import com.community.mapper.UserMapper;
 import com.community.model.Question;
@@ -97,6 +99,9 @@ public class QuestionService {
 
     public QuestionDTO getById(Integer id) {
         Question question = questionMapper.selectByPrimaryKey(id);
+        if (question == null) {
+            throw new CustomizeException(CustomizeErrorCode.QUESTION_NOT_FOUND);
+        }
         QuestionDTO questionDTO = new QuestionDTO();
         //快速将question中的属性拷贝到questionDTO中
         BeanUtils.copyProperties(question, questionDTO);
@@ -122,7 +127,10 @@ public class QuestionService {
             updateQuestion.setTag(question.getTag());
             QuestionExample example = new QuestionExample();
             example.createCriteria().andCreatorEqualTo(question.getId());
-            questionMapper.updateByExample(updateQuestion, example);
+            int update = questionMapper.updateByExample(updateQuestion, example);
+            if (update!=1){
+                throw new CustomizeException(CustomizeErrorCode.QUESTION_NOT_FOUND);
+            }
         }
     }
 }
